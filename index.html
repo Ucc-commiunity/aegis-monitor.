@@ -1,0 +1,322 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#05080f">
+  <title>AEGIS | Command Center</title>
+  <style>
+    :root {
+      --bg: #05080f;
+      --panel: #0b1220;
+      --border: #172b46;
+      --blue: #168cff;
+      --cyan: #55d8ff;
+      --text: #e8f2ff;
+      --muted: #8192aa;
+      --green: #35e6a0;
+      --red: #ff526b;
+      --yellow: #ffc857;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 22px 6%;
+      border-bottom: 1px solid var(--border);
+      background: #080d17;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .logo {
+      width: 43px;
+      height: 43px;
+      border: 2px solid var(--blue);
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: var(--cyan);
+      font-size: 24px;
+      box-shadow: 0 0 22px #168cff35;
+    }
+
+    h1 {
+      font-size: 22px;
+      letter-spacing: 4px;
+      margin: 0;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: 2px;
+      margin-top: 5px;
+    }
+
+    .mode {
+      color: var(--cyan);
+      border: 1px solid #168cff55;
+      padding: 9px 12px;
+      border-radius: 7px;
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: auto;
+      padding: 35px 6%;
+    }
+
+    .welcome {
+      margin-bottom: 28px;
+    }
+
+    .welcome h2 {
+      margin: 0 0 10px;
+      font-size: clamp(24px, 4vw, 34px);
+    }
+
+    .welcome p, .muted {
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 13px;
+    }
+
+    .overview {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 15px;
+      margin-bottom: 35px;
+    }
+
+    .card, .system {
+      background: linear-gradient(145deg, #0d1727, #080e18);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 21px;
+    }
+
+    .label {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    .number {
+      font-size: 30px;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    .blue { color: var(--cyan); }
+    .green { color: var(--green); }
+    .yellow { color: var(--yellow); }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .section-heading h3 { margin: 0; }
+
+    .system-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .system {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .system-name {
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    .system-description {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .status {
+      font-size: 11px;
+      color: var(--yellow);
+      background: #ffc85712;
+      border: 1px solid #ffc85735;
+      padding: 8px 11px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    button {
+      border: 1px solid #168cff75;
+      background: #168cff15;
+      color: var(--cyan);
+      border-radius: 7px;
+      padding: 11px 15px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #168cff30;
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .notice {
+      margin-top: 24px;
+      border: 1px solid var(--border);
+      background: #080e18;
+      padding: 17px;
+      border-radius: 9px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    footer {
+      text-align: center;
+      color: #63748d;
+      border-top: 1px solid var(--border);
+      padding: 24px 12px;
+      margin-top: 40px;
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 650px) {
+      header { padding: 18px 5%; }
+      h1 { font-size: 19px; }
+      .mode { font-size: 9px; }
+      main { padding: 25px 5%; }
+      .overview { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden="true">◇</div>
+      <div>
+        <h1>AEGIS</h1>
+        <div class="subtitle">DIGITAL MONITORING SYSTEM</div>
+      </div>
+    </div>
+    <div class="mode">● READ-ONLY MODE</div>
+  </header>
+
+  <main>
+    <section class="welcome">
+      <h2>Command Center<span class="blue">.</span></h2>
+      <p>Monitor your digital infrastructure from one central dashboard.</p>
+    </section>
+
+    <section class="overview">
+      <div class="card">
+        <div class="label">REGISTERED SYSTEMS</div>
+        <div class="number blue" id="total">5</div>
+      </div>
+      <div class="card">
+        <div class="label">CONFIRMED ONLINE</div>
+        <div class="number green" id="online">0</div>
+      </div>
+      <div class="card">
+        <div class="label">AWAITING VERIFICATION</div>
+        <div class="number yellow" id="unknown">5</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-heading">
+        <div>
+          <h3>Registered Systems</h3>
+          <div class="muted">Monitoring status and latest checks</div>
+        </div>
+        <button id="checkButton" type="button">Refresh Report</button>
+      </div>
+
+      <div class="system-list" id="systems">
+        <article class="system">
+          <div>
+            <div class="system-name">UCC IW</div>
+            <div class="system-description">Primary website</div>
+          </div>
+          <span class="status">● UNKNOWN</span>
+        </article>
+
+        <article class="system">
+          <div>
+            <div class="system-name">ZEX AI</div>
+            <div class="system-description">Artificial intelligence system</div>
+          </div>
+          <span class="status">● UNKNOWN</span>
+        </article>
+
+        <article class="system">
+          <div>
+            <div class="system-name">UCC Store</div>
+            <div class="system-description">Digital store</div>
+          </div>
+          <span class="status">● UNKNOWN</span>
+        </article>
+
+        <article class="system">
+          <div>
+            <div class="system-name">UCC News</div>
+            <div class="system-description">News platform</div>
+          </div>
+          <span class="status">● UNKNOWN</span>
+        </article>
+
+        <article class="system">
+          <div>
+            <div class="system-name">UCC Chat</div>
+            <div class="system-description">Communication platform</div>
+          </div>
+          <span class="status">● UNKNOWN</span>
+        </article>
+      </div>
+    </section>
+
+    <div class="notice">
+      <strong class="blue">SYSTEM NOTICE</strong><br>
+      Aegis dashboard initialized. No live checks have been performed yet.
+      All systems remain UNKNOWN until verified by the monitoring service.
+      Dashboard refreshes do not themselves perform live website checks.
+    </div>
+  </main>
+
+  <footer>AEGIS MONITORING SYSTEM · V1.0 · READ-ONLY</footer>
+</body>
+</html>
+```
