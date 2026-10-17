@@ -1,93 +1,93 @@
-```yaml
 name: AEGIS Website Monitor
 
-on:
-  schedule:
-    - cron: "0 2 * * *"
-  workflow_dispatch:
+'on':
+workflow_dispatch:
+schedule:
+- cron: '0 2 * * *'
 
 permissions:
-  contents: write
+contents: write
 
 jobs:
-  monitor:
-    runs-on: ubuntu-latest
+monitor:
+runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout AEGIS
-        uses: actions/checkout@v4
+```
+steps:
+  - name: Checkout AEGIS
+    uses: actions/checkout@v4
 
-      - name: Check UCC IW
-        id: check
-        shell: bash
-        run: |
-          URL="https://ucc-iw-ucc.ai.studio"
-          START=$(date +%s%3N)
+  - name: Check UCC IW
+    id: check
+    shell: bash
+    run: |
+      URL="https://ucc-iw-ucc.ai.studio"
+      START=$(date +%s%3N)
 
-          CODE=$(curl -L -sS \
-            --connect-timeout 10 \
-            --max-time 30 \
-            -o /dev/null \
-            -w "%{http_code}" \
-            "$URL" 2>/dev/null) || CODE="000"
+      CODE=$(curl -L -sS \
+        --connect-timeout 10 \
+        --max-time 30 \
+        -o /dev/null \
+        -w "%{http_code}" \
+        "$URL" 2>/dev/null) || CODE="000"
 
-          END=$(date +%s%3N)
-          RESPONSE=$((END - START))
+      END=$(date +%s%3N)
+      RESPONSE=$((END - START))
 
-          if [[ "$CODE" =~ ^[0-9]{3}$ ]] && \
-             [ "$CODE" -ge 200 ] && [ "$CODE" -lt 400 ]; then
-            STATUS="ONLINE"
-          else
-            STATUS="ERROR"
-          fi
+      if [[ "$CODE" =~ ^[0-9]{3}$ ]] && \
+         [ "$CODE" -ge 200 ] && [ "$CODE" -lt 400 ]; then
+        STATUS="ONLINE"
+      else
+        STATUS="ERROR"
+      fi
 
-          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
-          echo "code=$CODE" >> "$GITHUB_OUTPUT"
-          echo "response=$RESPONSE" >> "$GITHUB_OUTPUT"
+      echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+      echo "code=$CODE" >> "$GITHUB_OUTPUT"
+      echo "response=$RESPONSE" >> "$GITHUB_OUTPUT"
 
-          echo "UCC IW status: $STATUS"
-          echo "HTTP code: $CODE"
-          echo "Response time: ${RESPONSE}ms"
+      echo "UCC IW status: $STATUS"
+      echo "HTTP code: $CODE"
+      echo "Response time: ${RESPONSE}ms"
 
-      - name: Create monitoring report
-        env:
-          STATUS: ${{ steps.check.outputs.status }}
-          HTTP_CODE: ${{ steps.check.outputs.code }}
-          RESPONSE: ${{ steps.check.outputs.response }}
-        run: |
-          mkdir -p reports
+  - name: Create monitoring report
+    env:
+      STATUS: ${{ steps.check.outputs.status }}
+      HTTP_CODE: ${{ steps.check.outputs.code }}
+      RESPONSE: ${{ steps.check.outputs.response }}
+    run: |
+      mkdir -p reports
 
-          python3 - <<'PY'
-          import json
-          import os
-          from datetime import datetime, timezone
+      python3 - <<'PY'
+      import json
+      import os
+      from datetime import datetime, timezone
 
-          report = {
-              "system": "UCC IW",
-              "url": "https://ucc-iw-ucc.ai.studio",
-              "status": os.environ["STATUS"],
-              "http_code": os.environ["HTTP_CODE"],
-              "response_time_ms": int(os.environ["RESPONSE"]),
-              "checked_at": datetime.now(timezone.utc).isoformat()
-          }
+      report = {
+          "system": "UCC IW",
+          "url": "https://ucc-iw-ucc.ai.studio",
+          "status": os.environ["STATUS"],
+          "http_code": os.environ["HTTP_CODE"],
+          "response_time_ms": int(os.environ["RESPONSE"]),
+          "checked_at": datetime.now(timezone.utc).isoformat()
+      }
 
-          with open("reports/latest.json", "w") as f:
-              json.dump(report, f, indent=2)
+      with open("reports/latest.json", "w") as f:
+          json.dump(report, f, indent=2)
 
-          print(json.dumps(report, indent=2))
-          PY
+      print(json.dumps(report, indent=2))
+      PY
 
-      - name: Save report
-        run: |
-          git config user.name "AEGIS Monitor"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+  - name: Save report
+    run: |
+      git config user.name "AEGIS Monitor"
+      git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add reports/latest.json
+      git add reports/latest.json
 
-          if ! git diff --cached --quiet; then
-            git commit -m "Update AEGIS monitoring report"
-            git push
-          else
-            echo "Report unchanged."
-          fi
+      if ! git diff --cached --quiet; then
+        git commit -m "Update AEGIS monitoring report"
+        git push
+      else
+        echo "Report unchanged."
+      fi
 ```
