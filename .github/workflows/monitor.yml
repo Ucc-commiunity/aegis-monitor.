@@ -29,12 +29,13 @@ jobs:
             --max-time 30 \
             -o /dev/null \
             -w "%{http_code}" \
-            "$URL" 2>/dev/null || echo "000")
+            "$URL" 2>/dev/null) || CODE="000"
 
           END=$(date +%s%3N)
           RESPONSE=$((END - START))
 
-          if [ "$CODE" -ge 200 ] 2>/dev/null && [ "$CODE" -lt 400 ] 2>/dev/null; then
+          if [[ "$CODE" =~ ^[0-9]{3}$ ]] && \
+             [ "$CODE" -ge 200 ] && [ "$CODE" -lt 400 ]; then
             STATUS="ONLINE"
           else
             STATUS="ERROR"
@@ -48,7 +49,7 @@ jobs:
           echo "HTTP code: $CODE"
           echo "Response time: ${RESPONSE}ms"
 
-      - name: Update monitoring report
+      - name: Create monitoring report
         env:
           STATUS: ${{ steps.check.outputs.status }}
           HTTP_CODE: ${{ steps.check.outputs.code }}
@@ -57,7 +58,8 @@ jobs:
           mkdir -p reports
 
           python3 - <<'PY'
-          import json, os
+          import json
+          import os
           from datetime import datetime, timezone
 
           report = {
@@ -66,7 +68,7 @@ jobs:
               "status": os.environ["STATUS"],
               "http_code": os.environ["HTTP_CODE"],
               "response_time_ms": int(os.environ["RESPONSE"]),
-              "checked_at": datetime.now(timezone.utc).isoformat(),
+              "checked_at": datetime.now(timezone.utc).isoformat()
           }
 
           with open("reports/latest.json", "w") as f:
@@ -79,6 +81,7 @@ jobs:
         run: |
           git config user.name "AEGIS Monitor"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git add reports/latest.json
 
           if ! git diff --cached --quiet; then
